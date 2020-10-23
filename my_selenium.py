@@ -7,21 +7,56 @@ import time
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import random
-urls=["{\"board_upgrade\":\"http://121.89.198.81//d//0011\"}",
-      "{\"board_upgrade\":\"http://121.89.198.81//d//0010\"}",
-      "{\"board_upgrade\":\"http://121.89.198.81//d//0009\"}",
+
+def smart_wait(element_id):
+    for i in range(60):
+        if i>=59 :
+            print("timeout")
+        try:
+            if driver.find_element_by_xpath(element_id) :
+                break
+        except:
+            print("waitting for element")
+            time.sleep(1)
+
+def smart_wait_and_click(element_id):
+    for i in range(60):
+        if i>=59 :
+            print("timeout")
+        try:
+            if driver.find_element_by_xpath(element_id) and driver.find_element_by_xpath(element_id).click():
+                break
+        except:
+            print("waitting for element")
+            time.sleep(1)
+# urls=["{\"board_upgrade\":\"http://121.89.198.81//d//0011\"}",
+#       "{\"board_upgrade\":\"http://121.89.198.81//d//0010\"}",
+#       "{\"board_upgrade\":\"http://121.89.198.81//d//0009\"}",
+# ]
+#1为模组 0为mcu
+define_mcu_or_board = 1
+
+dn = '100801201013000001'
+
+# urls=["{\"board_upgrade\":\"http://121.89.198.81//d//0011\"}",
+#       "{\"board_upgrade\":\"http://121.89.198.81//d//0010_release//0010\"}",
+#       "{\"board_upgrade\":\"http://121.89.198.81//d//0009\"}",
+# ]
+# urls=["{\"board_upgrade\":\"http://121.89.198.81/d/esp32/0001/0001_linkkitapp@esp32devkitc_sign.bin\"}",
+#       "{\"board_upgrade\":\"http://121.89.198.81/d/esp32/1002/1002_linkkitapp@esp32devkitc_sign.bin\"}",
+#       "{\"board_upgrade\":\"http://121.89.198.81/d/esp32/1003/1003_linkkitapp@esp32devkitc_sign.bin\"}",
+# ]
+urls=["{\"board_upgrade\":\"http://121.89.198.81/d/linkkitapp@esp32devkitc_sign.bin\"}",
+      "{\"board_upgrade\":\"http://121.89.198.81/d/linkkitapp@esp32devkitc_sign.bin\"}",
 ]
-# try:
-#     with open("./records.log" ,"wr") as f:
-# except :
-#     f= open("./records.log",'w')
-# print(len(urls))
-# print(random.randint(0,len(urls)-1))
-# 调用环境变量指定的PhantomJS浏览器创建浏览器对象
-# 括号内为phantomjs安装位置
+mcu_urls=[
+    #   "{\"mcu_upgrade\":\"http://121.89.198.81/d/R1-ble-wifi_v3_20200911.bin\"}",
+      "{\"mcu_upgrade\":\"http://121.89.198.81/d/R1-ble-wifi_v4_20200925.bin\"}",
+      "{\"mcu_upgrade\":\"http://121.89.198.81/d/v0002linkkitapp@esp32devkitc_sign.bin\"}",
+]
 driver = webdriver.PhantomJS(executable_path="D:\\Softwares\\phantomjs-2.1.1-windows\\bin\\phantomjs.exe")
-# 访问的网址（以央视网为例）
 chrome_options = Options()
 prefs = {
    'profile.default_content_setting_values': {
@@ -30,8 +65,8 @@ prefs = {
 }
 chrome_options.add_experimental_option("prefs", prefs)
 driver = webdriver.Chrome(chrome_options=chrome_options)
-driver.implicitly_wait(5)
-driver.set_page_load_timeout(15)
+
+driver.set_page_load_timeout(60)
 main_win = driver.current_window_handle
 all_win = driver.window_handles
 print('Opening page')
@@ -40,41 +75,49 @@ driver.get("https://signin.aliyun.com/login.htm#/login")
 # 最大化浏览器
 
 driver.maximize_window()
-# 模拟点击登录按钮登录弹出登录框（后面有定位元素方法介绍）
+# 
 ret = driver.find_element_by_xpath("//*[@id=\"--aliyun-xconsole-app\"]/div/div[1]/div[2]/div[3]/div/form/div[1]/div[2]/span/input").clear()
 driver.find_element_by_xpath("//*[@id=\"--aliyun-xconsole-app\"]/div/div[1]/div[2]/div[3]/div/form/div[1]/div[2]/span/input").send_keys("xujunjian@kingsmith-com.onaliyun.com")
 driver.find_element_by_xpath("//*[text()='下一步']").click()
-driver.implicitly_wait(60)
+
+# smart_wait_and_click("//*[text()='登录']")
+driver.implicitly_wait(10)
 driver.find_element_by_xpath("//*[@id=\"--aliyun-xconsole-app\"]/div/div[1]/div[2]/div[3]/div/form/div[2]/div[2]/span/input").clear()
 driver.find_element_by_xpath("//*[@id=\"--aliyun-xconsole-app\"]/div/div[1]/div[2]/div[3]/div/form/div[2]/div[2]/span/input").send_keys("EvKutm@)1bNjQCl0Sy!MkQs6EZv4M!aT")
 driver.find_element_by_xpath("//*[text()='登录']").click()
-# 等待登录页面加载完成，WebDriverWait （后面有等待方法介绍）
+# 
 # WebDriverWait(driver, 10, 0.5).until(lambda diver:driver.find_element_by_xpath('//a[@class="dl"]'),message="")
-time.sleep(10)
-# driver.implicitly_wait(25)
-driver.get("https://iot.console.aliyun.com/lk/monitor/debug?pk=a1hiSOeUajy&pn=WalkingPad_R1S&dn=100801200831000002")
+# time.sleep(10)
+smart_wait("//*[text()='费用']")
+
+driver.get("https://iot.console.aliyun.com/lk/monitor/debug?pk=a1hiSOeUajy&pn=WalkingPad_R1S&dn="+dn)
+
 driver.implicitly_wait(25)
-# time.sleep(16)
-ret = driver.find_element_by_xpath("//*[text()='服务调用']").click()
+
+# time.sleep(6)
+smart_wait("//*[text()='服务调用']")
+smart_wait_and_click("//*[text()='服务调用']")    
+    
+# ret = driver.find_element_by_xpath("//*[text()='服务调用']").click()
 ret = driver.find_element_by_xpath("//*[@placeholder='请选择']").click()
-time.sleep(8)
-ret = driver.find_element_by_xpath("//*[text()='8266升级 (board_upgrade)']").click()
-time.sleep(4)
+
+if(define_mcu_or_board == 1):
+    ret = driver.find_element_by_xpath("//*[text()='8266升级 (board_upgrade)']").click()
+elif (define_mcu_or_board == 0):
+    ret = driver.find_element_by_xpath("//*[text()='升级mcu (mcu_upgrade)']").click()
+
 # driver.find_element_by_css_selector('textarea.ace_text-input').send_keys("{\"board_upgrade\":\"http://121.89.198.81//d//0011\"}")
 # time.sleep(4)
 times=1000
-
-urls=["{\"board_upgrade\":\"http://121.89.198.81//d//0011\"}",
-      "{\"board_upgrade\":\"http://121.89.198.81//d//0010\"}",
-      "{\"board_upgrade\":\"http://121.89.198.81//d//0009\"}",
-]
-# with open("./records.log" ,"w") as f:
 
 while(1):
     times=times-1
     driver.find_element_by_css_selector('textarea.ace_text-input').send_keys(Keys.CONTROL+'a')
     driver.find_element_by_css_selector('textarea.ace_text-input').send_keys(Keys.DELETE)
-    driver.find_element_by_css_selector('textarea.ace_text-input').send_keys(urls[random.randint(0,len(urls)-1)])
+    if define_mcu_or_board== 1 :
+        driver.find_element_by_css_selector('textarea.ace_text-input').send_keys(urls[random.randint(0,len(urls)-1)])
+    elif define_mcu_or_board == 0 :
+        driver.find_element_by_css_selector('textarea.ace_text-input').send_keys(mcu_urls[random.randint(0,len(mcu_urls)-1)])
     ret = driver.find_element_by_xpath("//*[text()='发送指令']").click()
     time.sleep(60)
     print(1000-times)
