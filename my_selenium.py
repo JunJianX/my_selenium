@@ -36,25 +36,17 @@ def smart_wait_and_click(element_id):
 #       "{\"board_upgrade\":\"http://121.89.198.81//d//0009\"}",
 # ]
 #1为模组 0为mcu
-define_mcu_or_board = 1
+define_mcu_or_board = 0
 
-dn = '100801201013000001'
+dn = '100801201106000001'
 
-# urls=["{\"board_upgrade\":\"http://121.89.198.81//d//0011\"}",
-#       "{\"board_upgrade\":\"http://121.89.198.81//d//0010_release//0010\"}",
-#       "{\"board_upgrade\":\"http://121.89.198.81//d//0009\"}",
-# ]
-# urls=["{\"board_upgrade\":\"http://121.89.198.81/d/esp32/0001/0001_linkkitapp@esp32devkitc_sign.bin\"}",
-#       "{\"board_upgrade\":\"http://121.89.198.81/d/esp32/1002/1002_linkkitapp@esp32devkitc_sign.bin\"}",
-#       "{\"board_upgrade\":\"http://121.89.198.81/d/esp32/1003/1003_linkkitapp@esp32devkitc_sign.bin\"}",
-# ]
-urls=["{\"board_upgrade\":\"http://121.89.198.81/d/linkkitapp@esp32devkitc_sign.bin\"}",
-      "{\"board_upgrade\":\"http://121.89.198.81/d/linkkitapp@esp32devkitc_sign.bin\"}",
+urls=["{\"board_upgrade\":\"http://121.89.198.81/d/v0002linkkitapp@esp32devkitc_sign.bin\"}",
+      "{\"board_upgrade\":\"http://121.89.198.81/d/v0002linkkitapp@esp32devkitc_sign.bin\"}",
 ]
 mcu_urls=[
     #   "{\"mcu_upgrade\":\"http://121.89.198.81/d/R1-ble-wifi_v3_20200911.bin\"}",
-      "{\"mcu_upgrade\":\"http://121.89.198.81/d/R1-ble-wifi_v4_20200925.bin\"}",
-      "{\"mcu_upgrade\":\"http://121.89.198.81/d/v0002linkkitapp@esp32devkitc_sign.bin\"}",
+      "{\"mcu_upgrade\":\"http://49.232.142.246/d/R1-ble-wifi_v6_20201106_no_safety_error.bin\"}",
+    #   "{\"mcu_upgrade\":\"http://121.89.198.81/d/v0002linkkitapp@esp32devkitc_sign.bin\"}",
 ]
 driver = webdriver.PhantomJS(executable_path="D:\\Softwares\\phantomjs-2.1.1-windows\\bin\\phantomjs.exe")
 chrome_options = Options()
@@ -99,7 +91,9 @@ smart_wait("//*[text()='服务调用']")
 smart_wait_and_click("//*[text()='服务调用']")    
     
 # ret = driver.find_element_by_xpath("//*[text()='服务调用']").click()
+smart_wait("//*[@placeholder='请选择']")  
 ret = driver.find_element_by_xpath("//*[@placeholder='请选择']").click()
+time.sleep(1)
 
 if(define_mcu_or_board == 1):
     ret = driver.find_element_by_xpath("//*[text()='8266升级 (board_upgrade)']").click()
